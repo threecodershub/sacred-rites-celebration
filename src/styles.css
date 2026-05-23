@@ -5,18 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Kathani Vizha — Traditional Sacred Luxury design system.
+ * Tamil ear-piercing ceremony invitation. Deep maroon, sandalwood,
+ * ivory, antique gold, ink. Cinzel display + Cormorant Garamond serif.
  */
+
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Tiro+Tamil:ital@0;1&display=swap");
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -59,29 +53,48 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-maroon: var(--maroon);
+  --color-sandal: var(--sandal);
+  --color-ivory: var(--ivory);
+  --color-gold: var(--gold);
+  --color-copper: var(--copper);
+  --color-ink: var(--ink);
+  --font-display: "Cinzel", serif;
+  --font-serif: "Cormorant Garamond", serif;
+  --font-tamil: "Tiro Tamil", serif;
+  --shadow-gold: 0 30px 80px -30px oklch(0.71 0.10 80 / 0.45);
+  --shadow-mandap: 0 40px 100px -40px oklch(0.20 0.10 25 / 0.6);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --radius: 0.375rem;
+
+  --maroon: oklch(0.34 0.12 22);
+  --sandal: oklch(0.89 0.035 75);
+  --ivory: oklch(0.985 0.012 85);
+  --gold: oklch(0.72 0.105 82);
+  --copper: oklch(0.58 0.12 45);
+  --ink: oklch(0.20 0.012 30);
+
+  --background: var(--ivory);
+  --foreground: var(--ink);
+  --card: var(--ivory);
+  --card-foreground: var(--ink);
+  --popover: var(--ivory);
+  --popover-foreground: var(--ink);
+  --primary: var(--maroon);
+  --primary-foreground: var(--ivory);
+  --secondary: var(--sandal);
+  --secondary-foreground: var(--maroon);
+  --muted: oklch(0.92 0.025 75);
+  --muted-foreground: oklch(0.45 0.03 30);
+  --accent: var(--gold);
+  --accent-foreground: var(--maroon);
+  --destructive: oklch(0.55 0.22 27);
+  --destructive-foreground: var(--ivory);
+  --border: oklch(0.34 0.12 22 / 0.14);
+  --input: oklch(0.34 0.12 22 / 0.18);
+  --ring: var(--gold);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -140,5 +153,75 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-serif);
+    font-feature-settings: "liga", "kern";
+    -webkit-font-smoothing: antialiased;
   }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Cinematic motion */
+@keyframes door-left { from { transform: translateX(0); } to { transform: translateX(-105%); } }
+@keyframes door-right { from { transform: translateX(0); } to { transform: translateX(105%); } }
+@keyframes drift-petal {
+  0% { transform: translateY(-10vh) translateX(0) rotate(0); opacity: 0; }
+  10% { opacity: 0.9; }
+  100% { transform: translateY(110vh) translateX(40px) rotate(540deg); opacity: 0; }
+}
+@keyframes flame-flicker {
+  0%, 100% { transform: scale(1) rotate(-1deg); filter: drop-shadow(0 0 12px oklch(0.72 0.105 82 / 0.7)); }
+  50% { transform: scale(1.08) rotate(2deg); filter: drop-shadow(0 0 24px oklch(0.72 0.13 70 / 0.9)); }
+}
+@keyframes gold-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bell-sway {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+
+.animate-door-left { animation: door-left 2s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+.animate-door-right { animation: door-right 2s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+.animate-petal { animation: drift-petal linear infinite; }
+.animate-flame { animation: flame-flicker 2.4s ease-in-out infinite; transform-origin: bottom center; }
+.animate-rise { animation: rise-in 1s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-bell { animation: bell-sway 4s ease-in-out infinite; transform-origin: top center; }
+
+.text-gold-shimmer {
+  background: linear-gradient(90deg,
+    oklch(0.58 0.10 60) 0%,
+    oklch(0.82 0.13 85) 40%,
+    oklch(0.95 0.10 90) 50%,
+    oklch(0.82 0.13 85) 60%,
+    oklch(0.58 0.10 60) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-shimmer 6s linear infinite;
+}
+
+.kolam-border {
+  background-image:
+    radial-gradient(circle at 0 50%, oklch(0.72 0.105 82) 1.5px, transparent 2px),
+    radial-gradient(circle at 100% 50%, oklch(0.72 0.105 82) 1.5px, transparent 2px),
+    linear-gradient(90deg, transparent 49%, oklch(0.72 0.105 82 / 0.4) 49%, oklch(0.72 0.105 82 / 0.4) 51%, transparent 51%);
+  background-size: 24px 100%, 24px 100%, 24px 1px;
+  background-repeat: repeat-x;
+  background-position: center;
+}
+
+.paper-grain {
+  background-image:
+    radial-gradient(oklch(0.34 0.12 22 / 0.04) 1px, transparent 1px);
+  background-size: 3px 3px;
 }
