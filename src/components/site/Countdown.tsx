@@ -11,8 +11,9 @@ function diff(target: Date) {
 
 export function Countdown({ targetISO }: { targetISO: string }) {
   const target = new Date(targetISO);
-  const [t, setT] = useState(() => diff(target));
+  const [t, setT] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
   useEffect(() => {
+    setT(diff(target));
     const id = setInterval(() => setT(diff(target)), 1000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
