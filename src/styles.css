@@ -225,3 +225,9 @@
     radial-gradient(oklch(0.34 0.12 22 / 0.04) 1px, transparent 1px);
   background-size: 3px 3px;
 }
+
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
