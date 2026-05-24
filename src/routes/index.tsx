@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import babyPortrait from "@/assets/baby-portrait.jpg";
 import sacredElements from "@/assets/sacred-elements.jpg";
 import venueImg from "@/assets/venue.jpg";
@@ -8,6 +8,7 @@ import { Petals } from "@/components/site/Petals";
 import { Countdown } from "@/components/site/Countdown";
 import { OrnamentalDivider } from "@/components/site/OrnamentalDivider";
 import { BrassLamp } from "@/components/site/BrassLamp";
+import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -44,6 +45,98 @@ const blessings = [
 function Index() {
   const [muted, setMuted] = useState(true);
   const [lang, setLang] = useState<"en" | "ta">("en");
+  const [toast, setToast] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const flash = (msg: string) => {
+    setToast(msg);
+    window.clearTimeout((flash as any)._t);
+    (flash as any)._t = window.setTimeout(() => setToast(null), 2400);
+  };
+
+  const toggleMusic = () => {
+    if (!audioRef.current) {
+      const a = new Audio(
+        "https://cdn.pixabay.com/download/audio/2022/03/15/audio_8e0a3c7b07.mp3?filename=indian-temple-bells-ambient-110083.mp3",
+      );
+      a.loop = true;
+      a.volume = 0.45;
+      audioRef.current = a;
+    }
+    if (muted) {
+      audioRef.current.play().catch(() => flash("Tap again to enable music"));
+      setMuted(false);
+    } else {
+      audioRef.current.pause();
+      setMuted(true);
+    }
+  };
+
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareText = "You are invited to the Kathani Vizha of Sai Arjun — 24 Aug 2026, Madurai";
+
+  const downloadICS = () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Kathani Vizha//EN",
+      "BEGIN:VEVENT",
+      "UID:kathani-sai-arjun@chettiar",
+      "DTSTAMP:20260101T000000Z",
+      "DTSTART:20260824T034500Z",
+      "DTEND:20260824T103000Z",
+      "SUMMARY:Kathani Vizha — Sai Arjun Chettiar",
+      "LOCATION:Sri Meenakshi Kalyana Mandapam, Madurai",
+      "DESCRIPTION:Sacred ear-piercing ceremony. With love\\, The Chettiar Family.",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const blob = new Blob([ics], { type: "text/calendar" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "kathani-vizha-sai-arjun.ics";
+    a.click();
+    URL.revokeObjectURL(url);
+    flash("Calendar invite downloaded");
+  };
+
+  const handleShare = async (kind: string) => {
+    switch (kind) {
+      case "WhatsApp":
+        window.open(
+          `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`,
+          "_blank",
+        );
+        break;
+      case "Copy Link":
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          flash("Link copied to clipboard");
+        } catch {
+          flash("Could not copy — long-press the URL bar");
+        }
+        break;
+      case "Save as Image":
+      case "Download PDF":
+        flash("Use your browser's Print → Save as PDF");
+        window.print();
+        break;
+      case "Google Calendar":
+        window.open(
+          "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+            "&text=Kathani+Vizha+%E2%80%94+Sai+Arjun" +
+            "&dates=20260824T034500Z/20260824T103000Z" +
+            "&details=Sacred+ear-piercing+ceremony" +
+            "&location=Sri+Meenakshi+Kalyana+Mandapam%2C+Madurai",
+          "_blank",
+        );
+        break;
+      case "Apple Calendar":
+        downloadICS();
+        break;
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-ivory text-ink selection:bg-gold/30 selection:text-maroon">
