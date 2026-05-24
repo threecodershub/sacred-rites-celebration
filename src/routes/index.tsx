@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import babyPortrait from "@/assets/baby-portrait.jpg";
 import sacredElements from "@/assets/sacred-elements.jpg";
 import venueImg from "@/assets/venue.jpg";
@@ -8,6 +8,7 @@ import { Petals } from "@/components/site/Petals";
 import { Countdown } from "@/components/site/Countdown";
 import { OrnamentalDivider } from "@/components/site/OrnamentalDivider";
 import { BrassLamp } from "@/components/site/BrassLamp";
+import { Reveal } from "@/components/site/Reveal";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -44,11 +45,110 @@ const blessings = [
 function Index() {
   const [muted, setMuted] = useState(true);
   const [lang, setLang] = useState<"en" | "ta">("en");
+  const [toast, setToast] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const flash = (msg: string) => {
+    setToast(msg);
+    window.clearTimeout((flash as any)._t);
+    (flash as any)._t = window.setTimeout(() => setToast(null), 2400);
+  };
+
+  const toggleMusic = () => {
+    if (!audioRef.current) {
+      const a = new Audio(
+        "https://cdn.pixabay.com/download/audio/2022/03/15/audio_8e0a3c7b07.mp3?filename=indian-temple-bells-ambient-110083.mp3",
+      );
+      a.loop = true;
+      a.volume = 0.45;
+      audioRef.current = a;
+    }
+    if (muted) {
+      audioRef.current.play().catch(() => flash("Tap again to enable music"));
+      setMuted(false);
+    } else {
+      audioRef.current.pause();
+      setMuted(true);
+    }
+  };
+
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareText = "You are invited to the Kathani Vizha of Sai Arjun — 24 Aug 2026, Madurai";
+
+  const downloadICS = () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Kathani Vizha//EN",
+      "BEGIN:VEVENT",
+      "UID:kathani-sai-arjun@chettiar",
+      "DTSTAMP:20260101T000000Z",
+      "DTSTART:20260824T034500Z",
+      "DTEND:20260824T103000Z",
+      "SUMMARY:Kathani Vizha — Sai Arjun Chettiar",
+      "LOCATION:Sri Meenakshi Kalyana Mandapam, Madurai",
+      "DESCRIPTION:Sacred ear-piercing ceremony. With love\\, The Chettiar Family.",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const blob = new Blob([ics], { type: "text/calendar" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "kathani-vizha-sai-arjun.ics";
+    a.click();
+    URL.revokeObjectURL(url);
+    flash("Calendar invite downloaded");
+  };
+
+  const handleShare = async (kind: string) => {
+    switch (kind) {
+      case "WhatsApp":
+        window.open(
+          `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`,
+          "_blank",
+        );
+        break;
+      case "Copy Link":
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          flash("Link copied to clipboard");
+        } catch {
+          flash("Could not copy — long-press the URL bar");
+        }
+        break;
+      case "Save as Image":
+      case "Download PDF":
+        flash("Use your browser's Print → Save as PDF");
+        window.print();
+        break;
+      case "Google Calendar":
+        window.open(
+          "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+            "&text=Kathani+Vizha+%E2%80%94+Sai+Arjun" +
+            "&dates=20260824T034500Z/20260824T103000Z" +
+            "&details=Sacred+ear-piercing+ceremony" +
+            "&location=Sri+Meenakshi+Kalyana+Mandapam%2C+Madurai",
+          "_blank",
+        );
+        break;
+      case "Apple Calendar":
+        downloadICS();
+        break;
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-ivory text-ink selection:bg-gold/30 selection:text-maroon">
       <TempleDoors />
       <Petals count={16} />
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] rounded-full bg-maroon text-ivory px-6 py-3 font-display tracking-[0.2em] uppercase text-[10px] shadow-[var(--shadow-mandap)] animate-rise">
+          {toast}
+        </div>
+      )}
 
       {/* Top utility bar */}
       <div className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-ivory/70 border-b border-maroon/10">
@@ -65,7 +165,7 @@ function Index() {
               {lang === "en" ? "தமிழ்" : "ENG"}
             </button>
             <button
-              onClick={() => setMuted((m) => !m)}
+              onClick={toggleMusic}
               className="rounded-full border border-maroon/30 px-3 py-1 text-maroon hover:bg-maroon hover:text-ivory transition-colors"
               aria-label="Toggle music"
             >
@@ -158,17 +258,15 @@ function Index() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {milestones.map((m, i) => (
-              <article
-                key={m.title}
-                className="group relative bg-ivory border border-maroon/10 p-7 rounded-sm transition-all hover:shadow-[var(--shadow-gold)] hover:-translate-y-1"
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-60" />
-                <span className="font-display text-[10px] tracking-[0.3em] text-gold uppercase">{m.date}</span>
-                <h3 className="font-display text-2xl text-maroon mt-3 mb-3">{m.title}</h3>
-                <p className="font-serif italic text-ink/70 leading-relaxed">{m.note}</p>
-                <div className="mt-5 text-3xl text-maroon/20 group-hover:text-gold transition-colors">❋</div>
-              </article>
+              <Reveal key={m.title} delay={i * 90}>
+                <article className="group relative bg-ivory border border-maroon/10 p-7 rounded-sm transition-all duration-500 hover:shadow-[var(--shadow-gold)] hover:-translate-y-1 hover:border-gold/40 h-full">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-60" />
+                  <span className="font-display text-[10px] tracking-[0.3em] text-gold uppercase">{m.date}</span>
+                  <h3 className="font-display text-2xl text-maroon mt-3 mb-3">{m.title}</h3>
+                  <p className="font-serif italic text-ink/70 leading-relaxed">{m.note}</p>
+                  <div className="mt-5 text-3xl text-maroon/20 group-hover:text-gold group-hover:rotate-180 transition-all duration-700">❋</div>
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -194,7 +292,8 @@ function Index() {
 
           <ol className="relative space-y-14 border-l border-gold/30 pl-8 md:pl-12">
             {rituals.map((r, i) => (
-              <li key={r.title} className="relative">
+              <Reveal key={r.title} delay={i * 80}>
+              <li className="relative">
                 <span className="absolute -left-[42px] md:-left-[54px] top-2 size-4 rounded-full bg-gold ring-4 ring-maroon shadow-[0_0_20px_oklch(0.72_0.105_82_/_0.7)]" />
                 <div className="flex flex-col md:flex-row md:items-baseline gap-3 md:gap-8">
                   <span className="font-display text-2xl text-gold tabular-nums whitespace-nowrap md:w-32 shrink-0">{r.time}</span>
@@ -216,16 +315,17 @@ function Index() {
                   </div>
                 </div>
               </li>
+              </Reveal>
             ))}
           </ol>
 
           <div className="mt-16 text-center">
-            <a
-              href="#"
+            <button
+              onClick={downloadICS}
               className="inline-flex items-center gap-3 rounded-full border border-gold/50 px-7 py-3 font-display tracking-[0.2em] uppercase text-xs text-gold hover:bg-gold hover:text-maroon transition-colors"
             >
               + Add to Calendar
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -280,13 +380,12 @@ function Index() {
 
           <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
             {blessings.map((b) => (
-              <div
-                key={b.who}
-                className="relative bg-ivory border border-gold/30 p-6 rounded-sm before:absolute before:inset-2 before:border before:border-gold/15 before:pointer-events-none"
-              >
-                <p className="font-serif italic text-lg text-ink/80 mb-3 leading-relaxed">"{b.msg}"</p>
-                <p className="font-display text-[10px] tracking-[0.3em] text-maroon uppercase">— {b.who}</p>
-              </div>
+              <Reveal key={b.who}>
+                <div className="relative bg-ivory border border-gold/30 p-6 rounded-sm before:absolute before:inset-2 before:border before:border-gold/15 before:pointer-events-none transition-all duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-gold)] h-full">
+                  <p className="font-serif italic text-lg text-ink/80 mb-3 leading-relaxed">"{b.msg}"</p>
+                  <p className="font-display text-[10px] tracking-[0.3em] text-maroon uppercase">— {b.who}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -346,7 +445,10 @@ function Index() {
               >
                 Get Directions
               </a>
-              <button className="rounded-full border border-maroon/40 px-6 py-3 font-display tracking-[0.2em] uppercase text-xs text-maroon hover:bg-maroon hover:text-ivory transition-colors">
+              <button
+                onClick={() => handleShare("Copy Link")}
+                className="rounded-full border border-maroon/40 px-6 py-3 font-display tracking-[0.2em] uppercase text-xs text-maroon hover:bg-maroon hover:text-ivory transition-colors"
+              >
                 QR Navigation
               </button>
             </div>
@@ -364,13 +466,16 @@ function Index() {
             Distance is no barrier to blessing. Join us virtually as the sacred moment unfolds, with timezone-aware streaming for our loved ones worldwide.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a
-              href="#"
+            <button
+              onClick={() => flash("Livestream link will be sent 1 day before the ceremony")}
               className="rounded-full bg-gold text-maroon px-7 py-3 font-display tracking-[0.2em] uppercase text-xs hover:bg-ivory transition-colors"
             >
               ● Watch Live
-            </a>
-            <button className="rounded-full border border-gold/40 px-7 py-3 font-display tracking-[0.2em] uppercase text-xs text-gold hover:bg-gold hover:text-maroon transition-colors">
+            </button>
+            <button
+              onClick={() => handleShare("WhatsApp")}
+              className="rounded-full border border-gold/40 px-7 py-3 font-display tracking-[0.2em] uppercase text-xs text-gold hover:bg-gold hover:text-maroon transition-colors"
+            >
               Send Digital Blessing
             </button>
           </div>
@@ -491,6 +596,7 @@ function Index() {
             {["WhatsApp", "Copy Link", "Save as Image", "Download PDF", "Google Calendar", "Apple Calendar"].map((s) => (
               <button
                 key={s}
+                onClick={() => handleShare(s)}
                 className="rounded-full border border-maroon/30 px-5 py-2 font-display tracking-[0.2em] uppercase text-[10px] text-maroon hover:bg-maroon hover:text-ivory transition-colors"
               >
                 {s}
