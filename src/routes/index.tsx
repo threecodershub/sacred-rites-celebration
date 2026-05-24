@@ -143,6 +143,13 @@ function Index() {
       <TempleDoors />
       <Petals count={16} />
 
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] rounded-full bg-maroon text-ivory px-6 py-3 font-display tracking-[0.2em] uppercase text-[10px] shadow-[var(--shadow-mandap)] animate-rise">
+          {toast}
+        </div>
+      )}
+
       {/* Top utility bar */}
       <div className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-ivory/70 border-b border-maroon/10">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-8 py-3">
@@ -251,17 +258,15 @@ function Index() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {milestones.map((m, i) => (
-              <article
-                key={m.title}
-                className="group relative bg-ivory border border-maroon/10 p-7 rounded-sm transition-all hover:shadow-[var(--shadow-gold)] hover:-translate-y-1"
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-60" />
-                <span className="font-display text-[10px] tracking-[0.3em] text-gold uppercase">{m.date}</span>
-                <h3 className="font-display text-2xl text-maroon mt-3 mb-3">{m.title}</h3>
-                <p className="font-serif italic text-ink/70 leading-relaxed">{m.note}</p>
-                <div className="mt-5 text-3xl text-maroon/20 group-hover:text-gold transition-colors">❋</div>
-              </article>
+              <Reveal key={m.title} delay={i * 90}>
+                <article className="group relative bg-ivory border border-maroon/10 p-7 rounded-sm transition-all duration-500 hover:shadow-[var(--shadow-gold)] hover:-translate-y-1 hover:border-gold/40 h-full">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-60" />
+                  <span className="font-display text-[10px] tracking-[0.3em] text-gold uppercase">{m.date}</span>
+                  <h3 className="font-display text-2xl text-maroon mt-3 mb-3">{m.title}</h3>
+                  <p className="font-serif italic text-ink/70 leading-relaxed">{m.note}</p>
+                  <div className="mt-5 text-3xl text-maroon/20 group-hover:text-gold group-hover:rotate-180 transition-all duration-700">❋</div>
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -287,7 +292,8 @@ function Index() {
 
           <ol className="relative space-y-14 border-l border-gold/30 pl-8 md:pl-12">
             {rituals.map((r, i) => (
-              <li key={r.title} className="relative">
+              <Reveal key={r.title} delay={i * 80}>
+              <li className="relative">
                 <span className="absolute -left-[42px] md:-left-[54px] top-2 size-4 rounded-full bg-gold ring-4 ring-maroon shadow-[0_0_20px_oklch(0.72_0.105_82_/_0.7)]" />
                 <div className="flex flex-col md:flex-row md:items-baseline gap-3 md:gap-8">
                   <span className="font-display text-2xl text-gold tabular-nums whitespace-nowrap md:w-32 shrink-0">{r.time}</span>
@@ -309,6 +315,7 @@ function Index() {
                   </div>
                 </div>
               </li>
+              </Reveal>
             ))}
           </ol>
 
@@ -373,13 +380,12 @@ function Index() {
 
           <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
             {blessings.map((b) => (
-              <div
-                key={b.who}
-                className="relative bg-ivory border border-gold/30 p-6 rounded-sm before:absolute before:inset-2 before:border before:border-gold/15 before:pointer-events-none"
-              >
-                <p className="font-serif italic text-lg text-ink/80 mb-3 leading-relaxed">"{b.msg}"</p>
-                <p className="font-display text-[10px] tracking-[0.3em] text-maroon uppercase">— {b.who}</p>
-              </div>
+              <Reveal key={b.who}>
+                <div className="relative bg-ivory border border-gold/30 p-6 rounded-sm before:absolute before:inset-2 before:border before:border-gold/15 before:pointer-events-none transition-all duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-gold)] h-full">
+                  <p className="font-serif italic text-lg text-ink/80 mb-3 leading-relaxed">"{b.msg}"</p>
+                  <p className="font-display text-[10px] tracking-[0.3em] text-maroon uppercase">— {b.who}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
