@@ -158,7 +158,7 @@ function Index() {
               {lang === "en" ? "தமிழ்" : "ENG"}
             </button>
             <button
-              onClick={() => setMuted((m) => !m)}
+              onClick={toggleMusic}
               className="rounded-full border border-maroon/30 px-3 py-1 text-maroon hover:bg-maroon hover:text-ivory transition-colors"
               aria-label="Toggle music"
             >
@@ -313,12 +313,12 @@ function Index() {
           </ol>
 
           <div className="mt-16 text-center">
-            <a
-              href="#"
+            <button
+              onClick={downloadICS}
               className="inline-flex items-center gap-3 rounded-full border border-gold/50 px-7 py-3 font-display tracking-[0.2em] uppercase text-xs text-gold hover:bg-gold hover:text-maroon transition-colors"
             >
               + Add to Calendar
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -439,7 +439,10 @@ function Index() {
               >
                 Get Directions
               </a>
-              <button className="rounded-full border border-maroon/40 px-6 py-3 font-display tracking-[0.2em] uppercase text-xs text-maroon hover:bg-maroon hover:text-ivory transition-colors">
+              <button
+                onClick={() => handleShare("Copy Link")}
+                className="rounded-full border border-maroon/40 px-6 py-3 font-display tracking-[0.2em] uppercase text-xs text-maroon hover:bg-maroon hover:text-ivory transition-colors"
+              >
                 QR Navigation
               </button>
             </div>
@@ -457,13 +460,16 @@ function Index() {
             Distance is no barrier to blessing. Join us virtually as the sacred moment unfolds, with timezone-aware streaming for our loved ones worldwide.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a
-              href="#"
+            <button
+              onClick={() => flash("Livestream link will be sent 1 day before the ceremony")}
               className="rounded-full bg-gold text-maroon px-7 py-3 font-display tracking-[0.2em] uppercase text-xs hover:bg-ivory transition-colors"
             >
               ● Watch Live
-            </a>
-            <button className="rounded-full border border-gold/40 px-7 py-3 font-display tracking-[0.2em] uppercase text-xs text-gold hover:bg-gold hover:text-maroon transition-colors">
+            </button>
+            <button
+              onClick={() => handleShare("WhatsApp")}
+              className="rounded-full border border-gold/40 px-7 py-3 font-display tracking-[0.2em] uppercase text-xs text-gold hover:bg-gold hover:text-maroon transition-colors"
+            >
               Send Digital Blessing
             </button>
           </div>
@@ -584,6 +590,7 @@ function Index() {
             {["WhatsApp", "Copy Link", "Save as Image", "Download PDF", "Google Calendar", "Apple Calendar"].map((s) => (
               <button
                 key={s}
+                onClick={() => handleShare(s)}
                 className="rounded-full border border-maroon/30 px-5 py-2 font-display tracking-[0.2em] uppercase text-[10px] text-maroon hover:bg-maroon hover:text-ivory transition-colors"
               >
                 {s}
