@@ -19,8 +19,8 @@ export function TempleDoors() {
       style={{ pointerEvents: gone ? "none" : "auto" }}
       aria-hidden={open}
     >
-      {/* Centered welcome content (behind doors visually) */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-ivory">
+      {/* Centered welcome content (in front of doors visually) */}
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-ivory">
         <div className="flex gap-16 mb-8 opacity-90">
           <BrassLamp />
           <BrassLamp />
